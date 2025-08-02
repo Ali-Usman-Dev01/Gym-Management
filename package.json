@@ -1,0 +1,85 @@
+{
+  "name": "warriors-fitness-studio",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Cross-platform Gym Management App with Warrior Mentality",
+  "author": "Ali Usman",
+  "type": "module",
+  "main": "main.cjs",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint . --ext .ts",
+    "format": "prettier --write .",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:watch": "vitest watch",
+    "electron": "electron main.cjs",
+    "electron-dev": "concurrently \"npm run dev\" \"npm run electron\"",
+    "electron:build": "electron-builder --win nsis"
+  },
+  "build": {
+    "appId": "com.warriors.fitness",
+    "productName": "Warriors Fitness Studio",
+    "files": [
+    "dist/**/*",
+    "assets/**/*",
+    "main.cjs",
+    "preload.cjs",
+    "splash.html"
+    ],
+    "directories": {
+      "output": "build"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "./public/assets/logo.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
+  "dependencies": {
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@mui/icons-material": "^5.16.7",
+    "@mui/material": "^5.16.7",
+    "@mui/x-data-grid": "^8.9.2",
+    "@mui/x-date-pickers": "^7.13.0",
+    "@stripe/react-stripe-js": "^2.8.0",
+    "@stripe/stripe-js": "^4.3.0",
+    "@tanstack/react-query": "^5.52.0",
+    "@tanstack/react-router": "^1.49.1",
+    "axios": "^1.7.4",
+    "date-fns": "^3.6.0",
+    "nedb": "^1.8.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.2",
+    "@tanstack/router-devtools": "^1.49.1",
+    "@tanstack/router-plugin": "^1.48.6",
+    "@testing-library/jest-dom": "^6.5.0",
+    "@testing-library/react": "^16.0.0",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/node": "^22.4.2",
+    "@types/react": "^18.3.23",
+    "@types/react-dom": "^18.3.0",
+    "@typescript-eslint/eslint-plugin": "^8.2.0",
+    "@typescript-eslint/parser": "^8.2.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "concurrently": "^8.2.2",
+    "electron": "^30.0.0",
+    "electron-builder": "^26.0.12",
+    "eslint-plugin-react-refresh": "^0.4.9",
+    "globals": "^15.9.0",
+    "jsdom": "^24.1.1",
+    "msw": "^2.3.5",
+    "typescript": "^5.5.3",
+    "vite": "^5.4.1",
+    "vitest": "^2.0.5"
+  }
+}
