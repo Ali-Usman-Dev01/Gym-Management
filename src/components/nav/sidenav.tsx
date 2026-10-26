@@ -114,7 +114,7 @@ function DrawerContent({ onItemClick }: { onItemClick?: () => void }) {
         <Divider />
         <ListItemButton onClick={handleLogout}>
           <ListItemIcon>
-            <LogoutIcon />
+            <LogoutIcon sx={{ color: 'white' }} />
           </ListItemIcon>
           <ListItemText primary="Logout" />
         </ListItemButton>

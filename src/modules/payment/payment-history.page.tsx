@@ -1,7 +1,16 @@
 import { useEffect, useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import { format, parseISO } from 'date-fns';
-import { IconButton, Tooltip, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from '@mui/material';
+import {
+  IconButton,
+  Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  TextField,
+} from '@mui/material';
 import { Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
 
 export function PaymentHistory() {
@@ -44,7 +53,7 @@ export function PaymentHistory() {
   const handleEditSave = async () => {
     if (editRow) {
       await window.api.payments.update(editRow.id, editRow);
-      setRows(rows.map(r => (r.id === editRow.id ? editRow : r)));
+      setRows(rows.map((r) => (r.id === editRow.id ? editRow : r)));
       handleCloseDialog();
     }
   };
@@ -52,7 +61,7 @@ export function PaymentHistory() {
   // Delete handler
   const handleDeletePayment = async (id: any) => {
     await window.api.payments.remove(id);
-    setRows(rows.filter(r => r.id !== id));
+    setRows(rows.filter((r) => r.id !== id));
   };
 
   const columns = [
@@ -139,19 +148,39 @@ export function PaymentHistory() {
             type="number"
             fullWidth
             value={editRow?.amount || ''}
-            onChange={e => setEditRow({ ...editRow, amount: e.target.value })}
+            onChange={(e) => setEditRow({ ...editRow, amount: e.target.value })}
           />
           <TextField
             margin="dense"
             label="Status"
             fullWidth
             value={editRow?.status || ''}
-            onChange={e => setEditRow({ ...editRow, status: e.target.value })}
+            onChange={(e) => setEditRow({ ...editRow, status: e.target.value })}
+          />
+          <input
+            type="date"
+            value={editRow?.createdAt || ''}
+            onChange={(e) =>
+              setEditRow({ ...editRow, createdAt: e.target.value })
+            }
+            style={{
+              width: '100%',
+              marginTop: '16px',
+              background: '#22223b',
+              color: '#ffffff',
+              border: '1px solid #f50057',
+              borderRadius: '4px',
+              padding: '16px',
+              outline: 'none',
+              colorScheme: 'dark',
+            }}
           />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog}>Cancel</Button>
-          <Button onClick={handleEditSave} variant="contained">Save</Button>
+          <Button onClick={handleEditSave} variant="contained">
+            Save
+          </Button>
         </DialogActions>
       </Dialog>
     </>

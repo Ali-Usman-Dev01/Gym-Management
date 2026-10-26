@@ -142,6 +142,7 @@ export function MembershipPlansPage() {
             '& .MuiDataGrid-sortIcon': {
               color: '#f50057', // sort arrow color
             },
+            overflowY: 'auto',
           }}
           rows={tableRows}
           columns={columns}

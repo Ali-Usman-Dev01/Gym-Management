@@ -65,7 +65,7 @@ export function MembersPage() {
 
   const columns: any[] = useMemo(
     () => [
-      { field: 'id', headerName: 'ID', width: 120, flex: 1 },
+      { field: 'serial', headerName: 'Serial', width: 120, flex: 1 },
       {
         field: 'firstName',
         headerName: 'First Name',
@@ -145,6 +145,7 @@ export function MembersPage() {
           '& .MuiDataGrid-sortIcon': {
             color: '#f50057', // sort arrow color
           },
+          overflowY: 'auto'
         }}
         rows={members}
         columns={columns}

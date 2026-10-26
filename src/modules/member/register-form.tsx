@@ -13,6 +13,7 @@ export function RegisterMemberForm() {
       firstName: formData.get('firstName') as string,
       lastName: formData.get('lastName') as string,
       phone: formData.get('phone') as string,
+      serial: formData.get('serial') as string,
     };
     await registerMember(memberData);
     navigate({ to: '/members' });
@@ -36,6 +37,7 @@ export function RegisterMemberForm() {
         required
       />
       <TextField fullWidth label="Phone" name="phone" margin="normal" />
+      <TextField fullWidth label="Serial" name="serial" margin="normal" />
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
         <Button
           type="submit"

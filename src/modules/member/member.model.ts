@@ -5,6 +5,7 @@ export interface Member {
   firstName: string;
   lastName: string;
   phone?: string;
+  serial?: string;
   status: MemberStatus;
   createdAt: string;
   updatedAt: string;

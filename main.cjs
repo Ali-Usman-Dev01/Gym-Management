@@ -1,6 +1,9 @@
 const { app, BrowserWindow, ipcMain, Menu } = require('electron');
 const Datastore = require('nedb');
 const path = require('path');
+const handler = require('serve-handler');
+const http = require('http');
+const cron = require('node-cron');
 
 const db = {
   members: new Datastore({
@@ -21,7 +24,28 @@ const db = {
   }),
 };
 
-function createWindow() {
+const PORT = 3000;
+
+function startServer() {
+  return new Promise((resolve, reject) => {
+    const server = http.createServer((req, res) =>
+      handler(req, res, {
+        public: path.join(__dirname, 'dist'),
+        cleanUrls: true,
+        rewrites: [{ source: '**', destination: '/index.html' }],
+      }),
+    );
+
+    server.listen(PORT, (err) => {
+      if (err) return reject(err);
+      console.log(`Server listening on http://localhost:${PORT}`);
+      resolve();
+    });
+  });
+}
+
+async function createWindow() {
+  await startServer();
   splash = new BrowserWindow({
     width: 590,
     height: 590,
@@ -42,9 +66,10 @@ function createWindow() {
       contextIsolation: true,
     },
   });
-  // Menu.setApplicationMenu(null);
-  // mainWindow.setMenuBarVisibility(false);
-  mainWindow.loadFile(path.join(__dirname, 'dist/index.html'));
+  Menu.setApplicationMenu(null);
+  mainWindow.setMenuBarVisibility(false);
+  mainWindow.loadURL('http://localhost:3000');
+  // mainWindow.loadURL('http://localhost:5173/');
   setTimeout(async () => {
     splash.destroy();
     mainWindow.show();

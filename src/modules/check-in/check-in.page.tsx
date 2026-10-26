@@ -2,27 +2,52 @@
 import DeleteIcon from '@mui/icons-material/Delete';
 import { CheckIn } from './check-in.model';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { format, parseISO } from 'date-fns';
-import { Autocomplete, Box, Button, FormControl, IconButton, Paper, SelectChangeEvent, TextField, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { format, isAfter, isEqual, parseISO, addMonths } from 'date-fns';
+import {
+  Autocomplete,
+  Box,
+  Button,
+  FormControl,
+  IconButton,
+  Paper,
+  SelectChangeEvent,
+  TextField,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
 import { useCheckInPage } from './use-check-in-page';
 import { LoadingAnimation } from '@/components';
 import { Member } from '../member';
+import { useEffect, useState } from 'react';
+import { useSnackbar } from '@/context';
 
 // In CheckInTable props, add onDeleteCheckIn
 interface SearchableMemberSelectProps {
   selectedMemberId: string;
   onMemberChange: (memberId: string) => void;
   members: Member[];
+  checkInMember: () => void;
 }
 
 export const SearchableMemberSelect: React.FC<SearchableMemberSelectProps> = ({
   selectedMemberId,
   onMemberChange,
   members,
+  checkInMember,
 }) => {
+  const { showSnackbar } = useSnackbar();
   const handleChange = (_: React.SyntheticEvent, value: Member | null) => {
     if (value) {
       onMemberChange(value.id);
+    }
+  };
+
+  const handlekeypress = (e: React.SyntheticEvent) => {
+    if (e.key === 'Enter') {
+      if (selectedMemberId) checkInMember();
+      else
+        showSnackbar('Member required which maybe empty or not exist', 'error');
     }
   };
 
@@ -31,13 +56,14 @@ export const SearchableMemberSelect: React.FC<SearchableMemberSelectProps> = ({
       <Autocomplete
         id="member-select-autocomplete"
         options={members}
-        getOptionLabel={(option) => `${option.firstName} ${option.lastName}`}
+        getOptionLabel={(option) => `${option.serial}`}
         renderInput={(params) => (
           <TextField {...params} label="Select Member" />
         )}
         value={members.find((member) => member.id === selectedMemberId) || null}
         onChange={handleChange}
         isOptionEqualToValue={(option, value) => option.id === value.id}
+        onKeyDown={handlekeypress}
       />
     </FormControl>
   );
@@ -58,14 +84,14 @@ function CheckInTable({
       headerName: 'Date',
       width: 110,
       flex: 1,
-      valueGetter: (_, row) => format(parseISO(row.createdAt), 'dd MMMM YYY'),
+      valueGetter: (_, row) => format(parseISO(row.createdAt), 'dd MMMM yyy'),
     },
     {
       field: 'time',
       headerName: 'Time',
       width: 110,
       flex: 1,
-      valueGetter: (_, row) => format(parseISO(row.createdAt ?? ''), 'HH:mm'),
+      valueGetter: (_, row) => format(parseISO(row.createdAt ?? ''), 'hh:mm a'),
     },
     {
       field: 'firstName',
@@ -81,17 +107,20 @@ function CheckInTable({
       flex: 1,
       valueGetter: (_, row) => row.member.lastName,
     },
-  ];
-
-  if (!isMobile) {
-    columns.push({
-      field: 'email',
-      headerName: 'Email',
-      width: 200,
+    {
+      field: 'status',
+      headerName: 'Status',
+      width: 130,
       flex: 1,
-      valueGetter: (_, row) => row.member.email,
-    });
-  }
+      renderCell: (params) => (
+        <div
+          style={{ color: params.row.status === false ? "rgb(5, 220, 20)" : "#ffd900" }}
+        >
+          {params.row.status === false ? 'Active' : 'Expired'}
+        </div>
+      ),
+    },
+  ];
 
   // Add delete column
   columns.push({
@@ -137,6 +166,7 @@ function CheckInTable({
           '& .MuiDataGrid-sortIcon': {
             color: '#f50057',
           },
+          overflowY: "auto"
         }}
         pageSizeOptions={[10, 20, 50]}
         checkboxSelection={false}
@@ -150,6 +180,12 @@ function CheckInTable({
 export function CheckInPage() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const [checkIns, setCheckIns] = useState<any>(null);
+
+  function isAfterOrEqual(dateToCompare: any) {
+    const date = Date.now();
+    return isAfter(date, dateToCompare) || isEqual(date, dateToCompare);
+  }
 
   const {
     checkInMember,
@@ -162,6 +198,30 @@ export function CheckInPage() {
     selectedMemberId,
     deleteCheckIn, // <-- Add this to your useCheckInPage hook
   } = useCheckInPage();
+
+  useEffect(() => {
+    let data: any = [];
+    if (filteredCheckIns?.length > 0) {
+      async function fetchData() {
+        for (const filteredCheckIn of filteredCheckIns) {
+          const payments: any = await window.api.payments.find({
+            memberId: filteredCheckIn?.memberId,
+          });
+          data = [
+            ...data,
+            {
+              ...filteredCheckIn,
+              status: isAfterOrEqual(addMonths(payments?.[0].createdAt, 1)),
+            },
+          ];
+        }
+        if (data.length === filteredCheckIns.length) return data;
+      }
+      fetchData().then((res) => setCheckIns(res));
+    }
+
+    if (filteredCheckIns.length === data.length) setCheckIns(data);
+  }, [filteredCheckIns]);
 
   if (isDataLoading) {
     return <LoadingAnimation />;
@@ -181,6 +241,7 @@ export function CheckInPage() {
       <Box sx={{ mb: 2 }}>
         <SearchableMemberSelect
           selectedMemberId={selectedMemberId}
+          checkInMember={checkInMember}
           onMemberChange={(memberId) =>
             handleMemberChange({
               target: { value: memberId },
@@ -199,7 +260,7 @@ export function CheckInPage() {
       </Box>
       <Box sx={{ flexGrow: 1, overflow: 'hidden' }}>
         <CheckInTable
-          checkIns={filteredCheckIns}
+          checkIns={checkIns}
           isMobile={isMobile}
           onDeleteCheckIn={deleteCheckIn}
         />

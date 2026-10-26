@@ -22,11 +22,12 @@
     "appId": "com.warriors.fitness",
     "productName": "Warriors Fitness Studio",
     "files": [
-    "dist/**/*",
-    "assets/**/*",
-    "main.cjs",
-    "preload.cjs",
-    "splash.html"
+      "dist/**/*",
+      "assets/**/*",
+      "main.cjs",
+      "preload.cjs",
+      "splash.html",
+      "node_modules/serve-handler/**/*"
     ],
     "directories": {
       "output": "build"
@@ -38,7 +39,8 @@
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true
-    }
+    },
+    "publish": null
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",
@@ -46,16 +48,18 @@
     "@mui/icons-material": "^5.16.7",
     "@mui/material": "^5.16.7",
     "@mui/x-data-grid": "^8.9.2",
-    "@mui/x-date-pickers": "^7.13.0",
     "@stripe/react-stripe-js": "^2.8.0",
     "@stripe/stripe-js": "^4.3.0",
     "@tanstack/react-query": "^5.52.0",
     "@tanstack/react-router": "^1.49.1",
+    "@tanstack/router": "^0.0.1-beta.53",
     "axios": "^1.7.4",
     "date-fns": "^3.6.0",
     "nedb": "^1.8.0",
+    "node-cron": "^4.2.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "serve-handler": "^6.1.6",
     "zod": "^3.23.8"
   },
   "devDependencies": {
